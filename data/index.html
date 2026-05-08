@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>ESP32 Dashboard</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #f4f4f4; }
+        .card { background: white; padding: 20px; margin: 20px auto; width: 300px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; color: white; margin: 5px; }
+        .on { background-color: #2ecc71; }
+        .off { background-color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+    <h2>Monitoramento e Controle ESP32</h2>
+
+    <div class="card">
+        <h3>Sensores</h3>
+        <p>Temperatura: <span id="temp">--</span> °C</p>
+        <p>Umidade: <span id="hum">--</span> %</p>
+    </div>
+
+    <div class="card">
+        <h3>Controle de Atuador</h3>
+        <button class="btn on" onclick="enviar('LIGAR')">Ligar LED</button>
+        <button class="btn off" onclick="enviar('DESLIGAR')">Desligar LED</button>
+    </div>
+
+    <script>
+        // SUBSTITUA PELO IP QUE APARECER NO MONITOR SERIAL DO VS CODE
+        var gateway = `ws://192.168.1.XX:81/`; 
+        var websocket;
+
+        function initWebSocket() {
+            websocket = new WebSocket(gateway);
+            websocket.onmessage = function(event) {
+                var data = JSON.parse(event.data);
+                document.getElementById('temp').innerHTML = data.temp;
+                document.getElementById('hum').innerHTML = data.hum;
+            };
+        }
+
+        function enviar(comando) {
+            websocket.send(comando);
+        }
+
+        window.onload = initWebSocket;
+    </script>
+</body>
+</html>
