@@ -1,51 +1,209 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <title>ESP32 Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento - EletronJun</title>
     <style>
-        body { font-family: Arial; text-align: center; background: #f4f4f4; }
-        .card { background: white; padding: 20px; margin: 20px auto; width: 300px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .btn { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; color: white; margin: 5px; }
-        .on { background-color: #2ecc71; }
-        .off { background-color: #e74c3c; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Caixa de Título - Agora ocupa 95% da largura */
+        .header-box {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1200px;
+            padding: 20px 40px;
+            text-align: left;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+        }
+
+        .header-box h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .header-box p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .update-time {
+            float: right;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Container de Modos - Mais largo e com fonte maior */
+        .mode-container {
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px 50px;
+            border-radius: 60px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 1.3em;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .mode-option {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .mode-option input {
+            margin-right: 12px;
+            transform: scale(1.5);
+        }
+
+        /* Grid de Sensores - Ocupa a tela toda */
+        .sensor-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            width: 95%;
+            max-width: 1200px;
+            flex-wrap: wrap;
+            /* Garante que em telas pequenas um fique sob o outro */
+        }
+
+        .sensor-card {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 40px;
+            padding: 50px 20px;
+            flex: 1;
+            /* Faz os cards crescerem igualmente para ocupar o espaço */
+            min-width: 350px;
+            /* Largura mínima para não esmagar */
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .sensor-card h3 {
+            margin-top: 0;
+            font-size: 1.8em;
+            color: #444;
+        }
+
+        /* Valores bem grandes para destaque */
+        .temp-val {
+            color: #e67e22;
+            font-size: 6em;
+            font-weight: bold;
+        }
+
+        .humi-val {
+            color: #3498db;
+            font-size: 6em;
+            font-weight: bold;
+        }
+
+        /* Ajuste para telas de celular */
+        @media (max-width: 600px) {
+
+            .temp-val,
+            .humi-val {
+                font-size: 4em;
+            }
+
+            .header-box h2 {
+                font-size: 1.3em;
+            }
+
+            .update-time {
+                float: none;
+                display: block;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <h2>Monitoramento e Controle ESP32</h2>
-
-    <div class="card">
-        <h3>Sensores</h3>
-        <p>Temperatura: <span id="temp">--</span> °C</p>
-        <p>Umidade: <span id="hum">--</span> %</p>
+    <div class="header-box">
+        <h2>Sistema de Monitoramento de Temperatura e Umidade do ar</h2>
+        <p>FCTE - EletronJun <span class="update-time">última atualização: <span id="time">--:--:--</span></span></p>
     </div>
 
-    <div class="card">
-        <h3>Controle de Atuador</h3>
-        <button class="btn on" onclick="enviar('LIGAR')">Ligar LED</button>
-        <button class="btn off" onclick="enviar('DESLIGAR')">Desligar LED</button>
+    <div class="mode-container">
+        <span style="font-weight: bold; color: #555;">Modo:</span>
+        <label class="mode-option" style="color: #27ae60;">
+            <input type="radio" name="modo" value="1" onclick="mudarModo(1)"> Automático
+        </label>
+        <label class="mode-option" style="color: #2980b9;">
+            <input type="radio" name="modo" value="2" onclick="mudarModo(2)"> Ligado
+        </label>
+        <label class="mode-option" style="color: #7f8c8d;">
+            <input type="radio" name="modo" value="0" onclick="mudarModo(0)" checked> Desligado
+        </label>
+    </div>
+
+    <div class="sensor-grid">
+        <div class="sensor-card">
+            <h3>Temperatura</h3>
+            <div class="temp-val"><span id="t">--</span> °C</div>
+        </div>
+
+        <div class="sensor-card">
+            <h3>Umidade relativa</h3>
+            <div class="humi-val"><span id="h">--</span> %</div>
+        </div>
     </div>
 
     <script>
-        // SUBSTITUA PELO IP QUE APARECER NO MONITOR SERIAL DO VS CODE
-        var gateway = `ws://192.168.1.XX:81/`; 
-        var websocket;
+        function mudarModo(valor) {
+            console.log("Modo enviado ao ESP32: " + valor);
+            fetch('/update?state=' + valor)
+                .then(response => console.log("Comando enviado!"));
 
-        function initWebSocket() {
-            websocket = new WebSocket(gateway);
-            websocket.onmessage = function(event) {
-                var data = JSON.parse(event.data);
-                document.getElementById('temp').innerHTML = data.temp;
-                document.getElementById('hum').innerHTML = data.hum;
-            };
+            if (valor == 0) {
+                document.getElementById('t').innerText = "--";
+                document.getElementById('h').innerText = "--";
+            }
         }
 
-        function enviar(comando) {
-            websocket.send(comando);
+        function atualizarRelogio() {
+            const agora = new Date();
+            document.getElementById('time').innerText = agora.toLocaleTimeString();
         }
 
-        window.onload = initWebSocket;
+        setInterval(function () {
+            const modoDesligado = document.querySelector('input[value="0"]').checked;
+
+            if (!modoDesligado) {
+                atualizarRelogio();
+                fetch('/read')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('t').innerText = data.temp;
+                        document.getElementById('h').innerText = data.humi;
+                    })
+                    .catch(err => console.log("Aguardando ESP32..."));
+            }
+        }, 2000);
     </script>
 </body>
+
 </html>
