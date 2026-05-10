@@ -1,60 +1,50 @@
-# ESP32 Environmental Monitor - Technical Documentation
+# 🌡️ Sistema de Monitoramento de Temperatura e Umidade (ESP32)
 
-```json
-{
-  "project": {
-    "name": "Sistema de Monitoramento EletronJun",
-    "version": "1.0.0",
-    "mcu": "ESP32-WROOM",
-    "framework": "Arduino IDE / C++"
-  },
+Este projeto consiste em um sistema de monitoramento ambiental em tempo real utilizando um microcontrolador **ESP32** e um sensor **DHT11**. O sistema oferece uma interface web interativa para visualização de dados, configuração de alertas e gerenciamento de logs históricos.
 
-  "hardware_layout": {
-    "sensors": {
-      "DHT11": { "pin": 15, "type": "Temperature/Humidity" }
-    },
-    "indicators": {
-      "LED_1": { "pin": 12, "state": "Status/Mode 0" },
-      "LED_2": { "pin": 26, "state": "Auto/Mode 1" },
-      "LED_3": { "pin": 32, "state": "On/Mode 2" }
-    }
-  },
+---
 
-  "logic_modes": {
-    "0": "DESLIGADO: Sistema em repouso. Apenas LED1 pulsa.",
-    "1": "AUTOMATICO: Monitoramento ativo. Logs gravados a cada 120s no SPIFFS.",
-    "2": "LIGADO: Configuração liberada. Ajuste de setpoints via Interface Web."
-  },
+## 🚀 Funcionalidades
 
-  "safety_setpoints": {
-    "LIMITE_TEMP": "30.0°C (Default - Alterável no modo 2)",
-    "LIMITE_UMIDADE": "30.0% (Static)",
-    "ALERTA_ACTION": "Todos os LEDs piscam em 100ms se ultrapassado"
-  },
+* **Monitoramento em Tempo Real:** Leitura precisa de temperatura e umidade.
+* **Interface Web Responsiva:** Dashboard moderno (HTML/CSS) para controle e visualização via navegador.
+* **Três Modos de Operação:**
+    * 🔴 **Desligado:** Sistema em repouso (apenas LED1 pisca indicando atividade).
+    * 🔵 **Automático:** Monitoramento ativo com gravação de logs no SPIFFS a cada 2 minutos.
+    * 🟢 **Ligado:** Modo de monitoramento contínuo e permissão para alteração de configurações.
+* **Alertas Visuais:** LEDs piscam rapidamente caso a temperatura ultrapasse o limite ou a umidade caia abaixo do nível de segurança.
+* **Sistema de Log:** Armazenamento de dados na memória interna (SPIFFS) com timestamps sincronizados via NTP.
+* **Configuração Dinâmica:** Alternância entre Celsius (°C) e Fahrenheit (°F) e ajuste de limites térmicos via interface.
 
-  "storage_system": {
-    "file_system": "SPIFFS",
-    "files": ["index.html", "css/styles.css", "js/script.js", "log.txt"],
-    "time_sync": "NTP (pool.ntp.org) - GMT-3"
-  },
+---
 
-  "api_rest_endpoints": {
-    "GET /": "Serve index.html da memória flash",
-    "GET /read": "Retorna JSON: {temp, humi, alertaTemp, alertaHumi, sensorOk, modo, unit}",
-    "POST /update?state=X": "Altera modo de operação (X = 0, 1 ou 2)",
-    "POST /config?unit=U&tempMax=T": "Altera unidade (C/F) e limite térmico",
-    "GET /download": "Exporta histórico log.txt"
-  },
+## 🛠️ Hardware Necessário
 
-  "deployment_steps": [
-    "1. Configurar SSID/Password no código fonte",
-    "2. Verificar instalação das bibliotecas DHT e ESP32 WiFi",
-    "3. Realizar Upload do Sketch (.ino)",
-    "4. Realizar Upload dos arquivos de dados (pasta /data) via SPIFFS Tool",
-    "5. Acessar IP via Navegador para Dashboard"
-  ],
+| Componente | Especificação |
+| :--- | :--- |
+| **Microcontrolador** | ESP32 (WROOM-32) |
+| **Sensor** | DHT11 (ou DHT22 com ajuste no código) |
+| **Atuadores** | 3 LEDs (Resistores de 220Ω recomendados) |
 
-  "maintainers": [
-    { "name": "Equipe EletronJun", "campus": "FCTE" }
-  ]
-}
+### 📌 Pinagem (GPIOs)
+* **GPIO 12:** LED 1 (Status / Modo Desligado)
+* **GPIO 26:** LED 2 (Modo Automático / Alerta)
+* **GPIO 32:** LED 3 (Modo Ligado / Alerta)
+* **GPIO 15:** Sensor DHT11
+
+---
+
+## 📂 Estrutura de Arquivos (SPIFFS)
+
+Os arquivos abaixo devem ser carregados na memória Flash do ESP32 para o funcionamento da interface web:
+
+```text
+/
+├── index.html       # Página principal da interface
+├── css/
+│   └── styles.css   # Estilização do dashboard
+├── js/
+│   └── script.js    # Lógica de atualização e requisições AJAX
+├── images/
+│   └── logo.png     # Identidade visual (EletronJun)
+└── log.txt          # Banco de dados de texto (gerado automaticamente)
