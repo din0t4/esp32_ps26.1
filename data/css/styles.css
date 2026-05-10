@@ -1,0 +1,508 @@
+:root {
+  --verde: #88C665;
+  --verde-esc: #0B442B;
+  --lilas: #A465C6;
+  --roxo: #4C1D6A;
+  --cinza: #3B4544;
+  --cinza-cl: #f0f2f0;
+  --surface: #ffffff;
+  --border: #d6e8d0;
+  --text: #3B4544;
+  --text-sec: #5a6a65;
+  --text-muted: #8fa89a;
+  --warn-bg: #fdf6e0;
+  --warn-border: #f0c96a;
+  --warn-text: #7a4f00;
+  --error: #8b1010;
+  --shadow: 0 4px 16px rgba(11, 68, 43, 0.12);
+  --shadow-sm: 0 2px 8px rgba(11, 68, 43, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--cinza-cl);
+  color: var(--text);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+
+.header-box {
+  background: var(--verde-esc);
+  border: 2px solid var(--verde);
+  border-radius: 20px;
+  width: 95%;
+  max-width: 1200px;
+  padding: 20px 40px;
+  text-align: left;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-logo {
+  height: 52px;
+  max-width: 180px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.header-text {
+  flex: 1;
+  min-width: 220px;
+  filter: brightness(0) invert(1);
+}
+
+.header-box h1 {
+  margin: 0;
+  font-size: 1.8em;
+  color: var(--surface);
+}
+
+.header-box p {
+  margin: 10px 0 0 0;
+  font-size: 1.1em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Status block (top-right of header) */
+.header-status {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.update-time {
+  font-weight: bold;
+  color: var(--surface);
+}
+
+/* Sensor awaiting badge */
+.sensor-status {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sensor-status.online {
+  background: rgba(136, 198, 101, 0.2);
+  border: 1px solid rgba(136, 198, 101, 0.45);
+  color: var(--verde);
+}
+
+.sensor-status.offline {
+  background: #fce8e8;
+  border: 1px solid #f0a0a0;
+  color: var(--error);
+}
+
+.sensor-status.waiting {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── MODE SELECTOR ───────────────────────────────────────── */
+
+.mode-container {
+  margin-bottom: 40px;
+  background: var(--surface);
+  padding: 20px 50px;
+  border-radius: 60px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  font-size: 1.3em;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mode-label {
+  font-weight: bold;
+  color: var(--cinza);
+}
+
+.mode-option {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.mode-option input {
+  margin-right: 12px;
+  transform: scale(1.5);
+  accent-color: currentColor;
+}
+
+.mode-option.off {
+  color: var(--text-sec);
+}
+
+.mode-option.auto {
+  color: var(--verde-esc);
+}
+
+.mode-option.on {
+  color: var(--roxo);
+}
+
+/* ── SENSOR GRID ─────────────────────────────────────────── */
+
+.sensor-grid,
+.control-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  width: 95%;
+  max-width: 1200px;
+  flex-wrap: wrap;
+}
+
+.sensor-card,
+.control-panel {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.sensor-card {
+  border-radius: 40px;
+  padding: 50px 20px;
+  flex: 1;
+  min-width: 350px;
+  text-align: center;
+}
+
+.sensor-card::before,
+.control-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+}
+
+.sensor-card.temp-card::before,
+.control-panel:first-child::before {
+  background: var(--verde);
+}
+
+.sensor-card.humi-card::before {
+  background: var(--lilas);
+}
+
+.sensor-card h3 {
+  margin-top: 0;
+  font-size: 1.8em;
+  color: var(--text-sec);
+}
+
+.temp-val {
+  color: var(--verde-esc);
+  font-size: 6em;
+  font-weight: bold;
+}
+
+.humi-val {
+  color: var(--roxo);
+  font-size: 6em;
+  font-weight: bold;
+}
+
+.alerta-piscando {
+  color: var(--error) !important;
+  animation: piscarAlerta 0.35s steps(2, start) infinite;
+}
+
+@keyframes piscarAlerta {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── CONTROL PANEL (config automático) ──────────────────── */
+/*
+  Linha com dois itens lado a lado: config automático (esq.) | notificações (dir.)
+*/
+
+.control-grid {
+  margin-top: 30px;
+}
+
+.control-panel {
+  border-radius: 24px;
+  padding: 24px 28px;
+  flex: 1;
+  min-width: 320px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.panel-heading h4,
+.notif-card h4 {
+  margin: 0;
+  color: var(--verde-esc);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.panel-tag {
+  border-radius: 999px;
+  background: #e8f5e1;
+  color: #1a5c12;
+  border: 1px solid #a8d896;
+  padding: 5px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.form-row label {
+  color: var(--text-sec);
+  font-weight: 700;
+}
+
+.inline-control {
+  display: flex;
+  gap: 10px;
+}
+
+.inline-control input,
+.inline-control select {
+  min-height: 42px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 0 12px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.inline-control input {
+  width: 150px;
+}
+
+.action-btn {
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 18px;
+  background: var(--verde-esc);
+  color: var(--surface);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.action-btn.secondary {
+  background: var(--roxo);
+}
+
+.action-btn:disabled,
+.inline-control input:disabled,
+.inline-control select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.panel-feedback {
+  margin: 14px 0 0;
+  color: var(--text-sec);
+  line-height: 1.45;
+}
+
+
+/* ── NOTIFICATIONS ───────────────────────────────────────── */
+
+/*
+  .notif-section fica dentro de .control-grid, à direita do .control-panel.
+    <div class="control-grid">
+      <div class="control-panel"> ... config automatico ... </div>
+      <div class="notif-section"> ... notificacoes ... </div>
+    </div>
+*/
+.notif-section {
+  flex: 1;
+  min-width: 320px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Faixa ambar no topo */
+.notif-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--warn-border);
+}
+
+.notif-card {
+  flex: 1;
+  min-height: 120px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.notif-card h4 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--verde-esc);
+}
+
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notif-empty {
+  font-size: 0.95em;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.notif-item {
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+}
+
+.notif-msg {
+  font-weight: bold;
+}
+
+.notif-time {
+  font-size: 0.85em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── FOOTER / LOG ────────────────────────────────────────── */
+
+/* Botão centralizado abaixo do control-grid */
+.log-footer {
+  width: 95%;
+  max-width: 1200px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.log-btn {
+  text-decoration: none;
+  background: var(--verde-esc);
+  color: var(--surface);
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: background 0.3s;
+  display: inline-block;
+}
+
+.log-btn:hover {
+  background: var(--roxo);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  body {
+    padding: 14px;
+  }
+
+  .temp-val,
+  .humi-val {
+    font-size: 4em;
+  }
+
+  .header-box {
+    padding: 18px 24px;
+  }
+
+  .header-box h1 {
+    font-size: 1.3em;
+  }
+
+  .header-status {
+    margin-left: 0;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .mode-container {
+    gap: 18px;
+    padding: 18px 24px;
+  }
+
+  .sensor-card,
+  .control-panel,
+  .notif-section {
+    min-width: 280px;
+  }
+
+  .panel-heading,
+  .inline-control {
+    flex-wrap: wrap;
+  }
+}

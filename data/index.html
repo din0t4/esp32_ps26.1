@@ -1,239 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoramento - EletronJun</title>
-
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .header-box {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 20px;
-            width: 95%;
-            max-width: 1200px;
-            padding: 20px 40px;
-            text-align: left;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            box-sizing: border-box;
-        }
-
-        .header-box h2 {
-            margin: 0;
-            font-size: 1.8em;
-        }
-
-        .header-box p {
-            margin: 10px 0 0 0;
-            font-size: 1.1em;
-            color: #666;
-        }
-
-        .update-time {
-            float: right;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .mode-container {
-            margin-bottom: 40px;
-            background: white;
-            padding: 20px 50px;
-            border-radius: 60px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            font-size: 1.3em;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .mode-option {
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .mode-option input {
-            margin-right: 12px;
-            transform: scale(1.5);
-        }
-
-        .sensor-grid {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            width: 95%;
-            max-width: 1200px;
-            flex-wrap: wrap;
-        }
-
-        .sensor-card {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 40px;
-            padding: 50px 20px;
-            flex: 1;
-            min-width: 350px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .sensor-card h3 {
-            margin-top: 0;
-            font-size: 1.8em;
-            color: #444;
-        }
-
-        .temp-val {
-            color: #e67e22;
-            font-size: 6em;
-            font-weight: bold;
-        }
-
-        .humi-val {
-            color: #3498db;
-            font-size: 6em;
-            font-weight: bold;
-        }
-
-        .log-btn {
-            margin-top: 30px;
-            text-decoration: none;
-            background: #333;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .log-btn:hover {
-            background: #555;
-        }
-
-        @media (max-width: 600px) {
-            .temp-val, .humi-val {
-                font-size: 4em;
-            }
-
-            .header-box h2 {
-                font-size: 1.3em;
-            }
-
-            .update-time {
-                float: none;
-                display: block;
-                margin-top: 10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitoramento - EletronJun</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
+
 <body>
-    <div class="header-box">
-        <h2>Sistema de Monitoramento de Temperatura e Umidade do ar</h2>
-        <p>
-            FCTE - EletronJun
-            <span class="update-time">ultima atualizacao: <span id="time">--:--:--</span></span>
-        </p>
+
+  <!-- HEADER -->
+  <div class="header-box">
+    <img class="header-logo" src="images/logo.png" alt="EletronJun" />
+    <div class="header-text">
+      <h1>Sistema de Monitoramento de Temperatura e Umidade do ar</h1>
+      <p>FCTE - EletronJun</p>
+    </div>
+    <div class="header-status">
+      <span id="sensorStatus" class="sensor-status offline">Sensor aguardando</span>
+      <span class="update-time">Última atualização: <span id="time">--:--:--</span></span>
+    </div>
+  </div>
+
+  <!-- SELETOR DE MODO -->
+  <div class="mode-container">
+    <span class="mode-label">Modo:</span>
+
+    <label class="mode-option off">
+      <input type="radio" name="modo" value="0" onclick="mudarModo(0)" checked />
+      Desligado
+    </label>
+
+    <label class="mode-option auto">
+      <input type="radio" name="modo" value="1" onclick="mudarModo(1)" />
+      Automático
+    </label>
+
+    <label class="mode-option on">
+      <input type="radio" name="modo" value="2" onclick="mudarModo(2)" />
+      Ligado
+    </label>
+  </div>
+
+  <!-- SENSORES: temperatura e umidade -->
+  <div class="sensor-grid">
+    <div class="sensor-card temp-card">
+      <h3>Temperatura</h3>
+      <div id="tempBox" class="temp-val">
+        <span id="t">--</span> <span id="tempUnit">°C</span>
+      </div>
     </div>
 
-    <div class="mode-container">
-        <span style="font-weight: bold; color: #555;">Modo:</span>
-
-        <!-- Modo automático envia state=1 -->
-        <label class="mode-option" style="color: #27ae60;">
-            <input type="radio" name="modo" value="1" onclick="mudarModo(1)"> Automático
-        </label>
-
-        <!-- Modo ligado envia state=2 -->
-        <label class="mode-option" style="color: #2980b9;">
-            <input type="radio" name="modo" value="2" onclick="mudarModo(2)"> Ligado
-        </label>
-
-        <!-- Modo desligado envia state=0 -->
-        <label class="mode-option" style="color: #7f8c8d;">
-            <input type="radio" name="modo" value="0" onclick="mudarModo(0)" checked> Desligado
-        </label>
+    <div class="sensor-card humi-card">
+      <h3>Umidade relativa</h3>
+      <div id="humiBox" class="humi-val">
+        <span id="h">--</span> %
+      </div>
     </div>
+  </div>
 
-    <!-- Cards onde aparecem os valores dos sensores -->
-    <div class="sensor-grid">
-        <div class="sensor-card">
-            <h3>Temperatura</h3>
-            <div class="temp-val"><span id="t">--</span> °C</div>
+  <!-- LINHA DE PAINÉIS: config automático | notificações -->
+  <div class="control-grid">
+
+    <!-- Painel esquerdo: configuração do automático -->
+    <section class="control-panel">
+      <div class="panel-heading">
+        <h4>Configuração do automático</h4>
+        <span id="configLock" class="panel-tag">Disponível no modo Ligado</span>
+      </div>
+
+      <div class="form-row">
+        <label for="tempMaxInput">Temperatura máxima</label>
+        <div class="inline-control">
+          <input id="tempMaxInput" type="number" step="0.1" value="30.0" disabled />
+          <select id="unitSelect" disabled>
+            <option value="C">°C</option>
+            <option value="F">°F</option>
+          </select>
         </div>
+      </div>
 
-        <div class="sensor-card">
-            <h3>Umidade relativa</h3>
-            <div class="humi-val"><span id="h">--</span> %</div>
+      <button id="saveConfigBtn" type="button" class="action-btn" onclick="salvarConfiguracao()" disabled>
+        Salvar configuração
+      </button>
+      <p id="configFeedback" class="panel-feedback">Entre no modo Ligado para ajustar os setpoints.</p>
+    </section>
+
+    <!-- Painel direito: notificações -->
+    <div class="notif-section">
+      <div class="notif-card">
+        <h4>Notificações</h4>
+        <div class="notif-list" id="notifList">
+          <div class="notif-empty">Nenhuma notificação ainda</div>
         </div>
+      </div>
     </div>
 
-    <!-- Link para baixar o histórico salvo no SPIFFS -->
-    <a href="/download" class="log-btn">Baixar Histórico de Logs</a>
+  </div><!-- /control-grid -->
 
-    <script>
-        // Envia ao ESP32 o modo selecionado pelo usuário, utilizando a rota /update e o parametro state
-        function mudarModo(valor) {
-            fetch('/update?state=' + valor)
-                .then(response => console.log("Modo alterado para " + valor));
+  <!-- RODAPÉ: botão de log centralizado -->
+  <div class="log-footer">
+    <a href="/download" class="log-btn" download="historico_logs.txt">
+      Baixar Histórico de Logs
+    </a>
+  </div>
 
-            // Se desligar, limpa os valores da tela
-            if (valor == 0) {
-                document.getElementById('t').innerText = "--";
-                document.getElementById('h').innerText = "--";
-            }
-        }
-
-        // Atualiza o relógio exibido no topo da pagina
-        function atualizarRelogio() {
-            const agora = new Date();
-            document.getElementById('time').innerText = agora.toLocaleTimeString();
-        }
-
-        // A cada 2 segundos, consulta os dados no ESP32
-        setInterval(function () {
-            // Verifica se o modo desligado esta marcado
-            const modoDesligado = document.querySelector('input[value="0"]').checked;
-
-            // Só busca dados quando o sistema não estiver desligado
-            if (!modoDesligado) {
-                atualizarRelogio();
-
-                // Faz requisicao GET na rota /read
-                fetch('/read')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Atualiza os elementos da interface com os dados recebidos
-                        const tElem = document.getElementById('t');
-                        tElem.innerText = data.temp;
-                        document.getElementById('h').innerText = data.humi;
-
-                        // Se alerta for verdadeiro, muda a cor da temperatura para vermelho
-                        if (data.alerta) {
-                            tElem.parentElement.style.color = "red";
-                        } else {
-                            tElem.parentElement.style.color = "#e67e22";
-                        }
-                    })
-                    .catch(err => console.log("Aguardando dados..."));
-            }
-        }, 2000);
-    </script>
+  <script src="js/script.js"></script>
 </body>
+
 </html>
