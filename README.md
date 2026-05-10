@@ -48,3 +48,74 @@ Os arquivos abaixo devem ser carregados na memória Flash do ESP32 para o funcio
 ├── images/
 │   └── logo.png     # Identidade visual (EletronJun)
 └── log.txt          # Banco de dados de texto (gerado automaticamente)
+
+# 🌡️ Monitor de Temperatura com ESP32 + DHT11
+
+> Projeto desenvolvido como parte das atividades da **EletronJun - FCTE**.
+
+---
+
+## ⚙️ Configuração e Instalação
+
+### 1. Bibliotecas Requeridas
+
+Certifique-se de ter as seguintes bibliotecas instaladas na sua IDE Arduino:
+
+| Biblioteca | Origem |
+|---|---|
+| DHT sensor library | Adafruit |
+| WiFi | Nativo do ESP32 |
+| WebServer | Nativo do ESP32 |
+| SPIFFS | Nativo do ESP32 |
+
+---
+
+### 2. Configuração de Rede
+
+Edite as seguintes linhas no arquivo `.ino` com as credenciais da sua rede local:
+
+```cpp
+const char *ssid = "NOME_DO_SEU_WIFI";
+const char *password = "SENHA_DO_SEU_WIFI";
+```
+
+---
+
+### 3. Upload dos Arquivos
+
+1. Realize o **Upload do Código** para o ESP32.
+2. Utilize a ferramenta **ESP32 Sketch Data Upload** para carregar o conteúdo da pasta `data` (HTML, CSS, JS) para o sistema de arquivos SPIFFS.
+
+---
+
+### 4. Uso
+
+Após o boot, abra o **Monitor Serial** (115200 baud) para encontrar o endereço IP gerado. Digite este IP em qualquer navegador conectado à mesma rede.
+
+---
+
+## 📊 Endpoints da API (Server-side)
+
+O ESP32 atua como um servidor que processa as seguintes rotas:
+
+| Rota | Método | Descrição |
+|---|---|---|
+| `/` | GET | Carrega a interface `index.html`. |
+| `/read` | GET | Retorna um JSON com dados do sensor, alertas e estados. |
+| `/update?state=X` | GET | Altera o modo do sistema (0, 1 ou 2). |
+| `/config` | GET | Altera unidade (°C/°F) e limite de temperatura (Modo 2 apenas). |
+| `/download` | GET | Realiza o download do arquivo `log.txt` para o computador. |
+
+---
+
+## 🛡️ Segurança e Estabilidade
+
+- **Sincronização NTP:** O relógio interno é sincronizado via `pool.ntp.org` (Fuso horário UTC-3), garantindo que os logs tenham data e hora corretas.
+
+- **Watchdog de Sensor:** O sistema detecta se o sensor DHT11 foi desconectado, exibindo um alerta de erro na interface e interrompendo leituras falsas.
+
+- **Bloqueio de Configuração:** Alterações de parâmetros (unidade e temperatura máxima) só são permitidas quando o sistema está no **Modo 2 (Ligado)**, prevenindo bugs no modo automático.
+
+---
+
+> **Nota:** Este projeto foi desenvolvido como parte das atividades da **EletronJun - FCTE**.
